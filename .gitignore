@@ -1,0 +1,21 @@
+# Build output
+bin/
+obj/
+publish/
+
+# Runtime-downloaded artifacts (Whisper models and ffmpeg)
+models/
+tools/
+
+# Transcription output
+out/
+transcriptions.md
+*.transcript.txt
+
+# IDE / editor
+.idea/
+.vs/
+*.user
+
+# OS
+.DS_Store
