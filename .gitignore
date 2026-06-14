@@ -2,6 +2,7 @@
 bin/
 obj/
 publish/
+nupkg/
 
 # Runtime-downloaded artifacts (Whisper models and ffmpeg)
 models/

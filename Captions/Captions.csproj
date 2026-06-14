@@ -7,6 +7,22 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- Distribute as a .NET global tool so 'captions' is available on the PATH. -->
+  <PropertyGroup>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>captions</ToolCommandName>
+    <PackageId>Captions</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Romeo de León</Authors>
+    <Description>Transcribe a folder of videos into text using Whisper (speech-to-text).</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Whisper.net" Version="1.9.1" />
     <PackageReference Include="Whisper.net.Runtime" Version="1.9.1" />

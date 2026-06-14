@@ -17,15 +17,52 @@ for the `notary` agent, which converts transcripts into detailed software requir
 
 ## Prerequisites
 
-- .NET SDK 10 or newer (`dotnet --version`).
 - Internet access on the first run (to download ffmpeg and the Whisper model into the `tools/`
   and `models/` folders next to the executable). Subsequent runs are fully offline.
-- The Captions repository available locally (this project).
+- Either:
+  - the `captions` command installed globally (preferred — see below), **or**
+  - the Captions repository available locally plus the .NET SDK 10+ (`dotnet --version`).
 
 ## How to run it
 
-From the repository root, invoke the project with `dotnet run`. Everything after `--` is passed
-to Captions:
+Captions can be invoked in two ways. **Prefer the global command when it is available.**
+
+### 1. Global command (preferred)
+
+First check whether the tool is already installed on the PATH:
+
+```bash
+captions --help        # if this works, the tool is globally available
+# or:
+command -v captions
+```
+
+If it is, call it directly — no repository needed, run it from any folder:
+
+```bash
+captions --dir <videos-folder> [options]
+```
+
+If the command is **not** found, you can install it as a .NET global tool from the repository:
+
+```bash
+dotnet pack Captions -c Release -o ./nupkg
+dotnet tool install --global --add-source ./nupkg Captions
+```
+
+.NET installs global tools into `~/.dotnet/tools`, which is **not** on the `PATH` by default. If
+`captions` is still "command not found" after installing, add that folder to your `PATH` (zsh on
+macOS shown; use `~/.bashrc` for bash):
+
+```bash
+echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 2. From the repository (fallback)
+
+When the global command is unavailable and you are inside the repository, run it with `dotnet run`.
+Everything after `--` is passed to Captions:
 
 ```bash
 dotnet run --project Captions -- --dir <videos-folder> [options]
@@ -59,23 +96,26 @@ Notes:
 
 ## Examples
 
+The examples use the global `captions` command. If you are running from the repository instead,
+replace `captions` with `dotnet run --project Captions --` (everything else is identical).
+
 Transcribe a folder into a single Markdown file in the current directory:
 
 ```bash
-dotnet run --project Captions -- --dir ./videos
+captions --dir ./videos
 ```
 
 Transcribe into a chosen folder, also emitting one text file per video, using a more accurate
 model:
 
 ```bash
-dotnet run --project Captions -- --dir ./videos --out-dir ./out --out-each --model small
+captions --dir ./videos --out-dir ./out --out-each --model small
 ```
 
 Only per-video text files, no combined Markdown:
 
 ```bash
-dotnet run --project Captions -- --dir ./videos --out-each --no-main
+captions --dir ./videos --out-each --no-main
 ```
 
 ## After running

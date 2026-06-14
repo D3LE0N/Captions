@@ -48,7 +48,44 @@ Run it directly with `dotnet run` (recommended for development):
 dotnet run --project Captions -- --dir ./videos
 ```
 
-Or produce a self-contained executable and call it directly:
+### Install as a global tool (recommended)
+
+Captions ships as a [.NET global tool](https://learn.microsoft.com/dotnet/core/tools/global-tools),
+so you can install the `captions` command once and run it from any folder:
+
+```bash
+dotnet pack Captions -c Release -o ./nupkg
+dotnet tool install --global --add-source ./nupkg Captions
+```
+
+> **Important — PATH:** .NET installs global tools into `~/.dotnet/tools`, which is **not** on the
+> `PATH` by default. If `captions` reports "command not found", add that folder to your `PATH`.
+> For zsh (macOS default):
+>
+> ```bash
+> echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.zshrc
+> source ~/.zshrc
+> ```
+>
+> For bash, use `~/.bashrc` (or `~/.bash_profile`) instead. On Windows the installer adds the
+> folder to `PATH` automatically.
+
+Then, from anywhere:
+
+```bash
+captions --dir ./videos
+```
+
+Update or remove it later with:
+
+```bash
+dotnet tool update --global --add-source ./nupkg Captions
+dotnet tool uninstall --global Captions
+```
+
+### Other options
+
+Produce a self-contained executable and call it directly:
 
 ```bash
 dotnet publish Captions -c Release -o ./publish
@@ -75,15 +112,18 @@ captions --dir <folder> [--out-dir <folder>] [--model <name>] [--out-each] [--no
 
 ### Examples
 
+These use the global `captions` command. If you are running from the repository instead, replace
+`captions` with `dotnet run --project Captions --`.
+
 ```bash
 # Combined transcriptions.md in the current directory
-dotnet run --project Captions -- --dir ./videos
+captions --dir ./videos
 
 # Choose an output folder, also emit one .txt per video, use a more accurate model
-dotnet run --project Captions -- --dir ./videos --out-dir ./out --out-each --model small
+captions --dir ./videos --out-dir ./out --out-each --model small
 
 # Only per-video text files, no combined Markdown
-dotnet run --project Captions -- --dir ./videos --out-each --no-main
+captions --dir ./videos --out-each --no-main
 ```
 
 ### Output
