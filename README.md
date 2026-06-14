@@ -3,9 +3,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-10-512BD4.svg)](https://dotnet.microsoft.com/)
 
-**Captions** is a small, clean .NET console tool that transcribes a folder of videos into text
-using a local [Whisper](https://github.com/openai/whisper) model. It produces a single combined
-Markdown transcript and, optionally, one plain-text file per video.
+**Captions** is a small, clean .NET console tool that transcribes a folder of videos or audio
+files into text using a local [Whisper](https://github.com/openai/whisper) model. It produces a
+single combined Markdown transcript and, optionally, one plain-text file per source file.
 
 ffmpeg and the Whisper model are downloaded automatically on first run — the only hard
 prerequisite is the .NET SDK.
@@ -19,8 +19,8 @@ The repository also ships with AI tooling for [Claude Code](https://claude.com/c
 
 ## Features
 
-- 🎬 Batch-transcribes a whole folder of videos.
-- 📝 One combined `transcriptions.md`, and/or one `.txt` per video.
+- 🎬 Batch-transcribes a whole folder of videos and/or audio files.
+- 📝 One combined `transcriptions.md`, and/or one `.txt` per source file.
 - 🤖 Local Whisper inference (no API keys, no cloud) via [Whisper.net](https://github.com/sandrohanea/whisper.net).
 - ⬇️ Auto-downloads ffmpeg and the selected model on first run; offline afterwards.
 - 🎚️ Selectable model size (`tiny` … `large-turbo`) to trade speed for accuracy.
@@ -30,7 +30,9 @@ The repository also ships with AI tooling for [Claude Code](https://claude.com/c
 
 - [.NET SDK 10+](https://dotnet.microsoft.com/download) (`dotnet --version`).
 - Internet access on the **first** run only (to fetch ffmpeg and the model).
-- Supported input extensions: `.mp4 .mov .mkv .avi .webm .m4v .flv .wmv .mpg .mpeg`.
+- Supported input extensions:
+  - Video: `.mp4 .mov .mkv .avi .webm .m4v .flv .wmv .mpg .mpeg`
+  - Audio: `.mp3 .wav .m4a .flac .ogg .oga .opus .aac .wma .aiff .aif`
 
 ## Installation
 
@@ -103,10 +105,10 @@ captions --dir <folder> [--out-dir <folder>] [--model <name>] [--out-each] [--no
 
 | Option               | Required | Description                                                                               |
 |----------------------|----------|-------------------------------------------------------------------------------------------|
-| `--dir <folder>`     | Yes      | Folder containing the videos to transcribe.                                               |
+| `--dir <folder>`     | Yes      | Folder containing the videos or audio files to transcribe.                                |
 | `--out-dir <folder>` | No       | Where output is written. Defaults to the current working directory.                       |
 | `--model <name>`     | No       | `tiny`, `base`, `small`, `medium`, `large`, `large-turbo`. Default `base`.                |
-| `--out-each`         | No       | Also write one `.txt` transcript per video.                                               |
+| `--out-each`         | No       | Also write one `.txt` transcript per source file.                                         |
 | `--no-main`          | No       | Do not create the combined Markdown file (created by default).                            |
 | `-h`, `--help`       | No       | Show usage and exit.                                                                       |
 
@@ -119,17 +121,17 @@ These use the global `captions` command. If you are running from the repository 
 # Combined transcriptions.md in the current directory
 captions --dir ./videos
 
-# Choose an output folder, also emit one .txt per video, use a more accurate model
-captions --dir ./videos --out-dir ./out --out-each --model small
+# Choose an output folder, also emit one .txt per source file, use a more accurate model
+captions --dir ./media --out-dir ./out --out-each --model small
 
-# Only per-video text files, no combined Markdown
-captions --dir ./videos --out-each --no-main
+# Only per-file text output, no combined Markdown
+captions --dir ./podcasts --out-each --no-main
 ```
 
 ### Output
 
-- **`<out-dir>/transcriptions.md`** — one `##` heading per video title followed by its transcription.
-- **`<out-dir>/<video-name>.txt`** — only when `--out-each` is used.
+- **`<out-dir>/transcriptions.md`** — one `##` heading per source title followed by its transcription.
+- **`<out-dir>/<source-name>.txt`** — only when `--out-each` is used.
 
 ## AI tooling (Claude Code)
 
@@ -192,8 +194,8 @@ Captions/
 ├── Program.cs                 # Composition root (wiring, exit codes, Ctrl+C)
 ├── Cli/                       # Argument parsing and help text
 ├── Logging/                   # IAppLogger / ConsoleLogger
-├── Transcription/             # Video discovery, ffmpeg, Whisper model + transcriber
-└── Output/                    # Combined Markdown and per-video writers
+├── Transcription/             # Media discovery, ffmpeg, Whisper model + transcriber
+└── Output/                    # Combined Markdown and per-file writers
 ```
 
 ## Contributing

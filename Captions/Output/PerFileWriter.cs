@@ -5,14 +5,14 @@ using Captions.Transcription;
 namespace Captions.Output;
 
 /// <summary>
-/// Writes one plain-text transcript file per video, named after the video. Enabled by the
+/// Writes one plain-text transcript file per media file, named after the source. Enabled by the
 /// <c>--out-each</c> option.
 /// </summary>
-public sealed class PerVideoWriter : ITranscriptionWriter
+public sealed class PerFileWriter : ITranscriptionWriter
 {
     private readonly IAppLogger _logger;
 
-    public PerVideoWriter(IAppLogger logger)
+    public PerFileWriter(IAppLogger logger)
     {
         _logger = logger;
     }
@@ -24,7 +24,7 @@ public sealed class PerVideoWriter : ITranscriptionWriter
     {
         foreach (var result in results)
         {
-            var fileName = $"{SanitizeFileName(result.VideoTitle)}.txt";
+            var fileName = $"{SanitizeFileName(result.Title)}.txt";
             var outputPath = Path.Combine(options.OutputDirectory, fileName);
             await File.WriteAllTextAsync(outputPath, result.Text, cancellationToken);
             _logger.Info($"Wrote transcript to '{outputPath}'.");

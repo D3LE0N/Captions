@@ -4,8 +4,9 @@ namespace Captions.Transcription;
 
 /// <summary>
 /// Extracts audio by invoking the ffmpeg executable directly, producing the 16 kHz mono PCM
-/// WAV format that Whisper.net requires. Arguments are passed as a list so paths with spaces
-/// need no manual quoting.
+/// WAV format that Whisper.net requires. Works for both video and audio inputs (ffmpeg simply
+/// drops any video stream and re-encodes the audio). Arguments are passed as a list so paths
+/// with spaces need no manual quoting.
 /// </summary>
 public sealed class FfmpegAudioExtractor : IAudioExtractor
 {
@@ -16,7 +17,7 @@ public sealed class FfmpegAudioExtractor : IAudioExtractor
         _ffmpegPath = ffmpegPath;
     }
 
-    public async Task<string> ExtractToWavAsync(string videoPath, CancellationToken cancellationToken)
+    public async Task<string> ExtractToWavAsync(string inputPath, CancellationToken cancellationToken)
     {
         var wavPath = Path.Combine(Path.GetTempPath(), $"captions-{Guid.NewGuid():N}.wav");
 
@@ -28,7 +29,7 @@ public sealed class FfmpegAudioExtractor : IAudioExtractor
             UseShellExecute = false,
         };
 
-        foreach (var argument in BuildArguments(videoPath, wavPath))
+        foreach (var argument in BuildArguments(inputPath, wavPath))
             startInfo.ArgumentList.Add(argument);
 
         using var process = Process.Start(startInfo)
@@ -45,11 +46,11 @@ public sealed class FfmpegAudioExtractor : IAudioExtractor
         return wavPath;
     }
 
-    private static IEnumerable<string> BuildArguments(string videoPath, string wavPath) =>
+    private static IEnumerable<string> BuildArguments(string inputPath, string wavPath) =>
     [
         "-y",               // overwrite the output if it already exists
-        "-i", videoPath,    // input video
-        "-vn",              // drop the video stream
+        "-i", inputPath,    // input media (video or audio)
+        "-vn",              // drop any video stream
         "-ar", "16000",     // 16 kHz sample rate (Whisper requirement)
         "-ac", "1",         // mono
         "-c:a", "pcm_s16le",// signed 16-bit PCM

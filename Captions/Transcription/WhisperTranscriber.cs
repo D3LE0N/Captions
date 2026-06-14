@@ -5,7 +5,7 @@ namespace Captions.Transcription;
 
 /// <summary>
 /// Transcribes audio with Whisper.net. The underlying <see cref="WhisperFactory"/> is created
-/// once from the model file and reused for every video, which is the expensive resource to
+/// once from the model file and reused for every file, which is the expensive resource to
 /// allocate. Language detection is left on automatic.
 /// </summary>
 public sealed class WhisperTranscriber : ITranscriber, IDisposable

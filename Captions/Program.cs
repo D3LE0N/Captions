@@ -81,7 +81,7 @@ internal static class CaptionsApp
 
         using var transcriber = new WhisperTranscriber(modelPath);
         var service = new TranscriptionService(
-            new VideoFileLocator(),
+            new MediaFileLocator(),
             new FfmpegAudioExtractor(ffmpegPath),
             transcriber,
             logger);
@@ -105,6 +105,6 @@ internal static class CaptionsApp
             yield return new MainMarkdownWriter(logger);
 
         if (options.WriteEachTranscript)
-            yield return new PerVideoWriter(logger);
+            yield return new PerFileWriter(logger);
     }
 }

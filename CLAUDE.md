@@ -5,21 +5,21 @@ this repository.
 
 ## What this project is
 
-**Captions** is a .NET 10 console application that transcribes a folder of videos into text using
-a local Whisper model. It outputs a combined Markdown file and/or one text file per video. ffmpeg
-and the Whisper model are downloaded automatically on first run.
+**Captions** is a .NET 10 console application that transcribes a folder of videos or audio files
+into text using a local Whisper model. It outputs a combined Markdown file and/or one text file
+per source file. ffmpeg and the Whisper model are downloaded automatically on first run.
 
 ## Common commands
 
 ```bash
 dotnet build                                        # build the solution
 dotnet run --project Captions -- --help             # show CLI usage
-dotnet run --project Captions -- --dir ./videos     # transcribe a folder
+dotnet run --project Captions -- --dir ./media      # transcribe a folder
 dotnet publish Captions -c Release -o ./publish     # self-contained build
 ```
 
 There is no test project yet. Verify changes by building and running the CLI against a sample
-folder of videos.
+folder of videos or audio files.
 
 ## Architecture
 
@@ -30,7 +30,7 @@ in the composition root (`Program.cs`).
   Parsing is side-effect free and returns a `CliParseResult` (success / help / error).
 - `Logging/` — `IAppLogger` with a `ConsoleLogger` implementation.
 - `Transcription/`
-  - `IVideoFileLocator` → `VideoFileLocator` — discovers videos by extension.
+  - `IMediaFileLocator` → `MediaFileLocator` — discovers videos and audio files by extension.
   - `IFfmpegProvider` → `FfmpegProvider` — downloads/caches ffmpeg into `tools/`.
   - `IAudioExtractor` → `FfmpegAudioExtractor` — extracts 16 kHz mono WAV via ffmpeg.
   - `IWhisperModelProvider` → `WhisperModelProvider` — downloads/caches the model into `models/`.
@@ -40,7 +40,7 @@ in the composition root (`Program.cs`).
   - `TranscriptionService` — orchestrates locate → extract → transcribe; a single failure is
     logged and skipped, never aborting the batch.
 - `Output/` — `ITranscriptionWriter` with `MainMarkdownWriter` (combined `transcriptions.md`) and
-  `PerVideoWriter` (one `.txt` per video). The writer set is chosen from the options.
+  `PerFileWriter` (one `.txt` per media file). The writer set is chosen from the options.
 
 `models/` and `tools/` are created next to the executable at runtime and hold downloaded
 artifacts (do not commit them).

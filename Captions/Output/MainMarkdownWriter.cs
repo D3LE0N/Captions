@@ -6,7 +6,7 @@ using Captions.Transcription;
 namespace Captions.Output;
 
 /// <summary>
-/// Default writer: produces a single Markdown file containing every video title (as a heading)
+/// Default writer: produces a single Markdown file containing every media title (as a heading)
 /// followed by its transcription.
 /// </summary>
 public sealed class MainMarkdownWriter : ITranscriptionWriter
@@ -31,7 +31,7 @@ public sealed class MainMarkdownWriter : ITranscriptionWriter
 
         foreach (var result in results)
         {
-            builder.AppendLine($"## {result.VideoTitle}");
+            builder.AppendLine($"## {result.Title}");
             builder.AppendLine();
             builder.AppendLine(result.Text.Length > 0 ? result.Text : "_(no speech detected)_");
             builder.AppendLine();

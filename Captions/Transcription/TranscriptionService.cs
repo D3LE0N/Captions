@@ -4,19 +4,19 @@ using Captions.Logging;
 namespace Captions.Transcription;
 
 /// <summary>
-/// Orchestrates the end-to-end transcription of every video in the input folder: locate,
-/// extract audio, transcribe, and collect results. Failures on a single video are logged and
+/// Orchestrates the end-to-end transcription of every media file in the input folder: locate,
+/// extract audio, transcribe, and collect results. Failures on a single file are logged and
 /// skipped so one bad file does not abort the whole batch.
 /// </summary>
 public sealed class TranscriptionService
 {
-    private readonly IVideoFileLocator _locator;
+    private readonly IMediaFileLocator _locator;
     private readonly IAudioExtractor _audioExtractor;
     private readonly ITranscriber _transcriber;
     private readonly IAppLogger _logger;
 
     public TranscriptionService(
-        IVideoFileLocator locator,
+        IMediaFileLocator locator,
         IAudioExtractor audioExtractor,
         ITranscriber transcriber,
         IAppLogger logger)
@@ -31,44 +31,44 @@ public sealed class TranscriptionService
         CliOptions options,
         CancellationToken cancellationToken)
     {
-        var videos = _locator.Locate(options.InputDirectory);
-        if (videos.Count == 0)
+        var mediaFiles = _locator.Locate(options.InputDirectory);
+        if (mediaFiles.Count == 0)
         {
-            _logger.Warn($"No supported video files were found in '{options.InputDirectory}'.");
+            _logger.Warn($"No supported media files were found in '{options.InputDirectory}'.");
             return [];
         }
 
-        _logger.Info($"Found {videos.Count} video(s) to transcribe.");
-        var results = new List<TranscriptionResult>(videos.Count);
+        _logger.Info($"Found {mediaFiles.Count} file(s) to transcribe.");
+        var results = new List<TranscriptionResult>(mediaFiles.Count);
 
-        for (var i = 0; i < videos.Count; i++)
+        for (var i = 0; i < mediaFiles.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var video = videos[i];
-            _logger.Info($"[{i + 1}/{videos.Count}] Transcribing '{video.Title}'...");
+            var media = mediaFiles[i];
+            _logger.Info($"[{i + 1}/{mediaFiles.Count}] Transcribing '{media.Title}'...");
 
             try
             {
-                var text = await TranscribeSingleAsync(video, cancellationToken);
+                var text = await TranscribeSingleAsync(media, cancellationToken);
                 results.Add(new TranscriptionResult
                 {
-                    VideoTitle = video.Title,
-                    VideoPath = video.Path,
+                    Title = media.Title,
+                    SourcePath = media.Path,
                     Text = text,
                 });
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                _logger.Error($"Failed to transcribe '{video.Title}': {ex.Message}");
+                _logger.Error($"Failed to transcribe '{media.Title}': {ex.Message}");
             }
         }
 
         return results;
     }
 
-    private async Task<string> TranscribeSingleAsync(VideoFile video, CancellationToken cancellationToken)
+    private async Task<string> TranscribeSingleAsync(MediaFile media, CancellationToken cancellationToken)
     {
-        var wavPath = await _audioExtractor.ExtractToWavAsync(video.Path, cancellationToken);
+        var wavPath = await _audioExtractor.ExtractToWavAsync(media.Path, cancellationToken);
         try
         {
             return await _transcriber.TranscribeAsync(wavPath, cancellationToken);

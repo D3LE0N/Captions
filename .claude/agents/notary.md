@@ -30,7 +30,7 @@ testable, and unambiguous. You never invent facts to fill gaps — instead you a
 
 1. **Locate and read the transcript.** Captions may have been run from the repository or via the
    globally installed `captions` command in any folder, so do not assume a fixed location. If the
-   human gave a path, read it. Otherwise look for `transcriptions.md` (and any per-video `.txt`
+   human gave a path, read it. Otherwise look for `transcriptions.md` (and any per-file `.txt`
    files) in the current working directory, then in an `out/` subfolder. If you still cannot find
    one, ask the human for the transcript's path (and, if needed, how to produce it with the
    `captions` skill/command).
